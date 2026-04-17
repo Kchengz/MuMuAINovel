@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, Button, Space, Typography, message, Progress, theme } from 'antd';
 import { CheckCircleOutlined, LoadingOutlined } from '@ant-design/icons';
@@ -77,6 +77,9 @@ export const AIProjectGenerator: React.FC<AIProjectGeneratorProps> = ({
   // 保存世界观生成结果，用于后续步骤
   const [worldBuildingResult, setWorldBuildingResult] = useState<WorldBuildingResult | null>(null);
 
+  // 防止重复触发的标志
+  const hasStartedRef = useRef(false);
+
   // LocalStorage 键名
   const storageKeys = {
     projectId: `${storagePrefix}_project_id`,
@@ -104,7 +107,8 @@ export const AIProjectGenerator: React.FC<AIProjectGeneratorProps> = ({
 
   // 开始自动化生成流程
   useEffect(() => {
-    if (config) {
+    if (config && !hasStartedRef.current) {
+      hasStartedRef.current = true;
       if (resumeProjectId) {
         // 恢复生成模式
         handleResumeGenerate(config, resumeProjectId);
